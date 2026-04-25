@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal Scout</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <section class="hero card">
+      <div>
+        <p class="eyebrow">Grounded research workflow</p>
+        <h1>Signal Scout</h1>
+        <p class="sub">Search the web, synthesize with an LLM, and get a clean action brief for what to build next.</p>
+      </div>
+      <div class="badge" id="statusBadge">Checking setup…</div>
+    </section>
+
+    <section class="card input-card">
+      <p class="label">Ask something worth building on</p>
+      <form id="queryForm">
+        <textarea id="queryInput" rows="4" placeholder="Example: What kinds of tiny AI tools are people actually finding useful at work right now?"></textarea>
+        <div class="actions">
+          <button type="submit">Run scout</button>
+          <button type="button" id="demoBtn" class="secondary">Run demo</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <p class="label">Summary</p>
+        <h2 id="summaryTitle">Waiting for input</h2>
+        <p id="summaryText" class="muted">This will show the distilled answer.</p>
+      </article>
+      <article class="card">
+        <p class="label">Angle</p>
+        <p id="angleText" class="muted">The strongest interpretation or build angle will land here.</p>
+      </article>
+    </section>
+
+    <section class="results-grid">
+      <article class="card"><p class="label">Tasks</p><ul id="tasksList" class="list"></ul></article>
+      <article class="card"><p class="label">Risks</p><ul id="risksList" class="list"></ul></article>
+      <article class="card"><p class="label">Questions</p><ul id="questionsList" class="list"></ul></article>
+    </section>
+
+    <section class="card">
+      <p class="label">Sources</p>
+      <div id="sources" class="sources"></div>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
