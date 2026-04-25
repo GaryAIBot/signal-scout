@@ -83,6 +83,24 @@ async def openai_brief(query: str, search: Dict[str, Any], api_key: str) -> Dict
     source_lines = "\n".join(f"- {item.get('title', 'Untitled')}: {item.get('url', '')}" for item in search.get("sources", []))
     payload = {
         "model": "gpt-4.1-mini",
+        "text": {
+            "format": {
+                "type": "json_schema",
+                "name": "signal_scout_brief",
+                "schema": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "summary": {"type": "string"},
+                        "angle": {"type": "string"},
+                        "tasks": {"type": "array", "items": {"type": "string"}},
+                        "risks": {"type": "array", "items": {"type": "string"}},
+                        "questions": {"type": "array", "items": {"type": "string"}}
+                    },
+                    "required": ["summary", "angle", "tasks", "risks", "questions"]
+                }
+            }
+        },
         "input": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {
