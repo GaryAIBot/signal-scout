@@ -12,7 +12,7 @@
       <div>
         <p class="eyebrow">Grounded research workflow</p>
         <h1>Signal Scout</h1>
-        <p class="sub">Search the web, synthesize with an LLM, and get a clean action brief for what to build next.</p>
+        <p class="sub">Search the web, synthesize with an LLM, and save the strongest finds into a persistent Neon-backed scout board.</p>
       </div>
       <div class="badge" id="statusBadge">Checking setup…</div>
     </section>
@@ -24,6 +24,7 @@
         <div class="actions">
           <button type="submit">Run scout</button>
           <button type="button" id="demoBtn" class="secondary">Run demo</button>
+          <button type="button" id="saveBtn" class="secondary">Save current result</button>
         </div>
       </form>
     </section>
@@ -49,6 +50,18 @@
     <section class="card">
       <p class="label">Sources</p>
       <div id="sources" class="sources"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <p class="label">Persistent scout board</p>
+          <h2>Saved results</h2>
+        </div>
+        <button type="button" id="refreshSavedBtn" class="secondary">Refresh board</button>
+      </div>
+      <div id="savedStatus" class="muted">Loading saved scouts…</div>
+      <div id="savedList" class="saved-list"></div>
     </section>
   </main>
   <script src="/app.js"></script>

@@ -65,6 +65,22 @@ button.secondary { background: rgba(255,255,255,0.08); }
   padding: 14px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255,255,255,0.04);
 }
 .source span { color: var(--muted); font-size: 0.9rem; word-break: break-word; }
+.section-head { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; }
+.saved-list { display: grid; gap: 14px; margin-top: 16px; }
+.saved-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,0.04);
+}
+.saved-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.saved-meta span { color: var(--muted); font-size: 0.9rem; }
 @media (max-width: 900px) {
   .hero, .grid, .results-grid { grid-template-columns: 1fr; }
   .actions { grid-auto-flow: row; }

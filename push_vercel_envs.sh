@@ -8,7 +8,7 @@ fi
 set -a
 source "$ENV_FILE"
 set +a
-for name in OPENAI_API_KEY GOOGLE_API_KEY; do
+for name in OPENAI_API_KEY GOOGLE_API_KEY DATABASE_URL; do
   value="${!name:-}"
   if [[ -z "$value" ]]; then
     echo "Skipping empty $name" >&2

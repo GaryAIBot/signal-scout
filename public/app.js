@@ -2,6 +2,8 @@ const statusBadge = document.getElementById('statusBadge');
 const queryForm = document.getElementById('queryForm');
 const queryInput = document.getElementById('queryInput');
 const demoBtn = document.getElementById('demoBtn');
+const saveBtn = document.getElementById('saveBtn');
+const refreshSavedBtn = document.getElementById('refreshSavedBtn');
 const summaryTitle = document.getElementById('summaryTitle');
 const summaryText = document.getElementById('summaryText');
 const angleText = document.getElementById('angleText');
@@ -9,6 +11,10 @@ const tasksList = document.getElementById('tasksList');
 const risksList = document.getElementById('risksList');
 const questionsList = document.getElementById('questionsList');
 const sources = document.getElementById('sources');
+const savedStatus = document.getElementById('savedStatus');
+const savedList = document.getElementById('savedList');
+
+let currentResult = null;
 
 function setStatus(text, bad = false) {
   statusBadge.textContent = text;
@@ -48,7 +54,31 @@ function renderSources(items) {
   }
 }
 
+function renderSaved(items) {
+  savedList.innerHTML = '';
+  if (!items || !items.length) {
+    savedStatus.textContent = 'No saved scouts yet. Run one, then save it.';
+    return;
+  }
+  savedStatus.textContent = `${items.length} saved scout${items.length === 1 ? '' : 's'} in Neon.`;
+  for (const item of items) {
+    const card = document.createElement('article');
+    card.className = 'saved-card';
+    card.innerHTML = `
+      <div class="saved-meta">
+        <strong>${item.title}</strong>
+        <span>${item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}</span>
+      </div>
+      <p class="muted"><strong>Query:</strong> ${item.query}</p>
+      <p>${item.summary}</p>
+      <p class="muted"><strong>Angle:</strong> ${item.angle}</p>
+    `;
+    savedList.appendChild(card);
+  }
+}
+
 function render(data) {
+  currentResult = data;
   summaryTitle.textContent = data.query;
   summaryText.textContent = data.brief?.summary || data.search?.summary || 'No summary returned.';
   angleText.textContent = data.brief?.angle || 'No angle returned.';
@@ -78,6 +108,45 @@ async function callApi(url) {
   }
 }
 
+async function loadSaved() {
+  savedStatus.textContent = 'Loading saved scouts…';
+  try {
+    const res = await fetch('/api/saved-scouts');
+    const data = await res.json();
+    if (!res.ok || data.ok === false) throw new Error(data.detail || 'Failed to load saved scouts');
+    renderSaved(data.items || []);
+  } catch (error) {
+    savedStatus.textContent = error.message;
+    savedList.innerHTML = '';
+  }
+}
+
+async function saveCurrent() {
+  if (!currentResult?.brief?.summary || !currentResult?.brief?.angle) {
+    savedStatus.textContent = 'Run or load a scout result first.';
+    return;
+  }
+  savedStatus.textContent = 'Saving current result…';
+  try {
+    const res = await fetch('/api/saved-scouts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: currentResult.query,
+        query: currentResult.query,
+        summary: currentResult.brief.summary,
+        angle: currentResult.brief.angle,
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || data.ok === false) throw new Error(data.detail || 'Failed to save result');
+    savedStatus.textContent = 'Saved to Neon.';
+    await loadSaved();
+  } catch (error) {
+    savedStatus.textContent = error.message;
+  }
+}
+
 queryForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const query = queryInput.value.trim();
@@ -89,12 +158,22 @@ demoBtn.addEventListener('click', async () => {
   await callApi('/api/demo');
 });
 
+saveBtn.addEventListener('click', async () => {
+  await saveCurrent();
+});
+
+refreshSavedBtn.addEventListener('click', async () => {
+  await loadSaved();
+});
+
 (async () => {
   try {
     const res = await fetch('/api/health');
     const data = await res.json();
-    setStatus(data.hasOpenAI && data.hasGoogle ? 'Keys loaded' : 'Keys missing', !(data.hasOpenAI && data.hasGoogle));
+    const good = data.hasOpenAI && data.hasGoogle && data.hasDatabase;
+    setStatus(good ? 'Keys + DB loaded' : 'Setup incomplete', !good);
   } catch {
     setStatus('Backend unavailable', true);
   }
+  await loadSaved();
 })();
